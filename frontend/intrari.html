@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:x="urn:schemas-microsoft-com:office:excel">
+<head>
+    <meta charset="UTF-8">
+    <title>Catalog Intrari</title>
+    
+    
+    <!-- Jquery JS file -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+
+    <!-- Bootstrap CSS File  -->
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    
+    <!-- Bootstrap JS file -->
+    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    
+    
+    <!-- Custom JS file -->
+    <script type="text/javascript" src="js/serialize.js"></script>
+    <script type="text/javascript" src="js/intrari.js"></script>
+    <script type="text/javascript" src="js/FileSaver.js"></script>
+    <script type="text/javascript" src="js/tableexport.js"></script>
+    <script type="text/javascript" src="js/xls.core.min.js"></script>
+    <script type="text/javascript" src="js/Blob.js"></script>
+</head>
+<body>
+
+<!-- Content Section -->
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Catalog Intrari</h1>
+        </div>
+    </div>
+    <ul class="nav nav-tabs">
+      <li role="presentation" class="active"><a href="intrari.html">Intrari</a></li>
+    </ul>
+    <br/>
+
+    <div class="row">
+        <div id="filter-panel" class="collapse filter-panel">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <form class="form-inline" role="form">
+                        
+                        <div class="form-group">
+                            <label class="filter-col" style="margin-right:0;" for="pref-search">Search:</label>
+                            <input type="text" id="myInput" onkeyup="search()" placeholder="Cauta dupa nr intrare" title="Type in a name">
+                        </div><!-- form group [search] -->
+                        
+                        <div class="form-group">    
+                            <button type="submit" class="btn btn-default filter-col">
+                                <span class="glyphicon glyphicon-record"></span> Save Settings
+                            </button>  
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>    
+        <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#filter-panel">
+            <span class="glyphicon glyphicon-cog"></span> Advanced Search
+        </button>
+        
+        <div class="col-md-12">
+            <div class="pull-right">
+                <button class="btn btn-success" data-toggle="modal" data-target="#add_new_record_modal" onclick="addRecord()">Adauga</button>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="records_content">
+                <br/>
+                <h3>Intrari</h3>
+                <table id="articles" class="table table-bordered table-striped">
+						<tr>
+							<th>ID.</th>
+							<th onclick="sortTable(1)">Numar intrare</th>
+							<th>Data intrare</th>
+							<th onclick="sortTable(3)">Furnizori</th>
+							<th onclick="sortTable(4)">Nr factura</th>
+							<th>Data factura</th>
+							<th onclick="sortTable(6)">Model document</th>
+							<th>Data scadenta</th>
+							<th>Valoare totala</th>
+							<th>Stare factura</th>
+							<th>Trimitere in conta</th>
+							<th>Update</th>
+							<th>Exclude</th>
+						</tr>
+            		</tr>
+				</<table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /Content Section -->
+
+
+<!-- Bootstrap Modals -->
+
+
+<!-- Modal - Edit New Article -->
+<div class="modal fade" id="add_new_record_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Adauga o noua intrare</h4>
+            </div>
+            <div class="modal-body">
+                <form id="record_form">
+                    <input type="hidden" name="id" id="id" />
+                    <div class="form-group">
+                        <label for="name">Nr intrare (*)</label>
+                        <input type="text" name="nr_intrare" id="nr_intrare" placeholder="Nr intrare" class="form-control" required/>
+                    </div>
+    
+                    <div class="form-group">
+                        <label for="name">Data intrare (*)</label>
+                        <input type="date" name="data_intrare" id="data_intrare" placeholder="Data intrare" class="form-control" onchange="date()" required />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="name">Furnizori (*)</label>
+                        <select name="furnizori" id="furnizori" placeholder="Furnizori" class="form-control" required>
+                            <option value="Metro">Metro</option>
+                            <option value="Carffour">Carffour</option>
+                            <option value="Altex">Altex</option>
+                            <option value="Emag">Emag</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="name">Nr factura</label>
+                        <input type="text" name="nr_factura" id="nr_factura" placeholder="Nr factura" class="form-control"/>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="name">Data factura</label>
+                        <input type="date" name="data_factura" id="data_factura" placeholder="Data factura" class="form-control"/>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="name">Model document (*)</label>
+                        <select name="model_document" id="model_document" placeholder="Model document" class="form-control" required>
+                            <option value="Factura">Factura</option>
+                            <option value="Aviz">Aviz</option>
+                            <option value="Bon fiscal">Bon fiscal</option>
+                            <option value="Borderou achizitie">Borderou achizitie</option>
+                            <option value="PV Intrare">PV Intrare</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="name">Data scadenta</label>
+                        <input type="date" name="data_scadenta" id="data_scadenta" placeholder="Data scadenta" class="form-control"/>
+                        
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="name">Valoare totala (*)</label>
+                        <input type="text" name="valoare_totala" id="valoare_totala" placeholder="Valoare totala" class="form-control" required/>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="name">Stare factura</label>
+                        <select name="stare_factura" id="stare_factura" placeholder="Stare factura" class="form-control">
+                            <option value="Initiala">Initiala</option>
+                            <option value="Valida">Valida</option>
+                            <option value="Anulata">Anulata</option>
+                            <option value="Returnata">Renurnata</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="name">Mod de plata</label>
+                        <select name="mod_plata" id="mod_plata" placeholder="Mod plata" class="form-control">
+                            <option value="cash">Cash</option>
+                            <option value="card">Card</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="name">Taxa</label>
+                        <input type="text" name="taxa" id="taxa" placeholder="Taxa" class="form-control"/>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="name">Moneda</label>
+                        <select name="moneda" id="moneda" placeholder="Moneda" class="form-control">
+                            <option value="eur">EUR</option>
+                            <option value="ron">RON</option>
+                            <option value="usd">USD</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveRecord()">Save Record</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- // Modal -->
+
+
+
+</body>
+</html>
